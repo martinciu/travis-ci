@@ -8,7 +8,7 @@ module Travis
 
       class << self
         def default_queue
-          @default_queue ||= Queue.new('builds')
+          @default_queue ||= Queue.new('ruby')
         end
 
         def queues
@@ -41,7 +41,7 @@ module Travis
           payload = payload_for(task, :queue => queue.name)
 
           ::Rails.logger.info("Job queued to #{queue.name.inspect}: #{payload.inspect}")
-          Resque.enqueue(queue, payload)
+          Amqp.publish(queue.name, payload)
 
           payload
         end
